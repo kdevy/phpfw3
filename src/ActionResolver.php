@@ -15,6 +15,7 @@ use Framework\exceptions\UnresolvableActionError;
 use Framework\interfaces\ActionInterface;
 use Framework\interfaces\ActionResolverInterface;
 use Framework\interfaces\RouteInterface;
+use Framework\interfaces\TemplateResponderInterface;
 
 class ActionResolver implements ActionResolverInterface
 {
@@ -22,6 +23,19 @@ class ActionResolver implements ActionResolverInterface
      * @var string
      */
     protected string $basePath;
+
+    /**
+     * @var TemplateResponderInterface
+     */
+    protected TemplateResponderInterface $templateResponder;
+
+    /**
+     * @param TemplateResponderInterface $templateResponder
+     */
+    public function __construct(TemplateResponderInterface $templateResponder)
+    {
+        $this->templateResponder = $templateResponder;
+    }
 
     /**
      * @param string $basePath
@@ -56,7 +70,10 @@ class ActionResolver implements ActionResolverInterface
             throw new UnresolvableActionError("The action class that does not exist ({$actionClassName}).");
         }
 
-        $action = new $actionClassName($request);
+        /**
+         * @var ActionInterface
+         */
+        $action = new $actionClassName($request, $this->templateResponder);
 
         return $action;
     }

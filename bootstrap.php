@@ -33,7 +33,7 @@ $containerBuilder->addDefinitions([
         return ServerRequestFromGlovalCreator::create();
     },
     ActionResolverInterface::class => function (ContainerInterface $container) {
-        $actionResolver = new ActionResolver();
+        $actionResolver = new ActionResolver($container->get(TemplateResponderInterface::class));
         $actionResolver->setBasePath(__DIR__ . DIRECTORY_SEPARATOR . "modules");
         return $actionResolver;
     },
