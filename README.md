@@ -61,4 +61,5 @@
 テンプレートレスポンダーを通してレンダリングされるhtmlファイルを格納するためのディレクトリです。
 
 ## 一連の流れ
-基本はindex.php → bootstrap.php → app.php → ミドルウェアをトラバース → URLパスに基づいてActionを解決 → メイン処理実行してResponseインスタンスを返してemmitする。
+基本はindex.php → bootstrap.php → app.php → ミドルウェアをトラバース → URLパスに基づいてActionを解決 → メイン処理実行してResponseインスタンスを返してemmitする。  
+場合によってTemplateResponderでResponseインスタンスを作成したり、ミドルウェアが処理を捕縛したりする。
