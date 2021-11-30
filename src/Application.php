@@ -14,6 +14,7 @@ use DI\Container;
 use Framework\interfaces\ActionResolverInterface;
 use Framework\interfaces\MiddlewareDispatcherInterface;
 use Framework\interfaces\RouteInterface;
+use Framework\interfaces\TemplateResponderInterface;
 use Framework\ActionResolver;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -68,7 +69,8 @@ class Application
 
         $this->request = $request ?? ServerRequestFromGlovalCreator::create();
 
-        $this->actionResolver = $actionResolver ?? new ActionResolver();
+        $templateResponder = $container->has(TemplateResponderInterface::class) ? $container->get(TemplateResponderInterface::class) : new TemplateResponder($this->request);
+        $this->actionResolver = $actionResolver ?? new ActionResolver($templateResponder);
 
         $this->middlewareDispatcher = $middlewareDispatcher ?? new MiddlewareDispatcher(
             $this->actionResolver,
