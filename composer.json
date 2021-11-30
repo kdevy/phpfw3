@@ -12,7 +12,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Framework\\": "src/"
-        }
+            "Framework\\": "src/",
+            "App\\": "app/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
     }
 }

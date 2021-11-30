@@ -25,14 +25,13 @@ class DebuggingMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        global $sttime;
         $response = $handler->handle($request);
         /** @var RouteInterface */
         $route = $request->getAttribute(RouteInterface::class);
         $body = $response->getBody();
         $contentType = $response->getHeader("Content-Type")[0] ?? "";
 
-        $lap = substr((string)(microtime(true) - $sttime), 0, 8);
+        $lap = substr((string)(microtime(true) - APP_START_TIME), 0, 8);
         $mu = floor(memory_get_usage(true) / 1024);
         $mpu = floor(memory_get_peak_usage(true) / 1024);
 
