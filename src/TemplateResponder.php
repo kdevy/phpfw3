@@ -87,7 +87,7 @@ class TemplateResponder implements TemplateResponderInterface
         $templatePath = realpath($this->basePath . DIRECTORY_SEPARATOR
             . $route->getModuleName() . DIRECTORY_SEPARATOR . $route->getActionName() . ".html");
 
-        if (is_readable($templatePath)) {
+        if (!is_readable($templatePath)) {
             throw new RuntimeException("Template file not unreadable ({$templatePath}).");
         }
 

@@ -16,9 +16,11 @@ use Framework\ServerRequestFromGlovalCreator;
 use Framework\ActionResolver;
 use Framework\MiddlewareDispatcher;
 use Framework\TemplateResponder;
+use Framework\Route;
 use Framework\interfaces\ActionResolverInterface;
 use Framework\interfaces\MiddlewareDispatcherInterface;
 use Framework\interfaces\TemplateResponderInterface;
+use Framework\interfaces\RouteInterface;
 use Framework\middlewares\DebuggingMiddleware;
 use Framework\middlewares\ErrorHandlingMiddleware;
 
@@ -28,7 +30,12 @@ $containerBuilder = new ContainerBuilder();
 
 $containerBuilder->addDefinitions([
     ServerRequestInterface::class => function (ContainerInterface $container) {
-        return ServerRequestFromGlovalCreator::create();
+        $request = ServerRequestFromGlovalCreator::create();
+        return $request;
+    },
+    RouteInterface::class => function (ContainerInterface $container) {
+        $route = new Route($container->get(ServerRequestInterface::class));
+        return $route;
     },
     ActionResolverInterface::class => function (ContainerInterface $container) {
         $actionResolver = new ActionResolver($container->get(TemplateResponderInterface::class));
@@ -37,12 +44,13 @@ $containerBuilder->addDefinitions([
     },
     MiddlewareDispatcherInterface::class => function (ContainerInterface $container) {
         $middlewareDispatcher = new MiddlewareDispatcher($container->get(ActionResolverInterface::class), $container);
-        $middlewareDispatcher->add(new DebuggingMiddleware());
         $middlewareDispatcher->add(new ErrorHandlingMiddleware());
         return $middlewareDispatcher;
     },
     TemplateResponderInterface::class => function (ContainerInterface $container) {
-        $templateResponder = new TemplateResponder($container->get(ServerRequestInterface::class));
+        $request = $container->get(ServerRequestInterface::class);
+        $request = $request->withAttribute(RouteInterface::class, $container->get(RouteInterface::class));
+        $templateResponder = new TemplateResponder($request);
         $templateResponder->setBasePath(realpath(BASE_DIR . DS . "templates"));
         return $templateResponder;
     }
@@ -54,7 +62,9 @@ $app = new Application(
     $container,
     $container->get(ServerRequestInterface::class),
     $container->get(ActionResolverInterface::class),
-    $container->get(MiddlewareDispatcherInterface::class)
+    $container->get(MiddlewareDispatcherInterface::class),
+    null,
+    $container->get(RouteInterface::class)
 );
 
 return $app;

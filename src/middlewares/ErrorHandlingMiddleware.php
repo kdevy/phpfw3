@@ -29,17 +29,12 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
     {
         try {
             $response = $handler->handle($request);
-        } catch (\Throwable $e) {
-            if (
-                $e instanceof UnresolvableActionError
-                || $e instanceof NotFound404Error
-            ) {
-                $psr17Factory = new Psr17Factory();
-                $body = "<p style='font-style: oblique;'>not found 404 ("
-                    . $request->getUri()->getPath() . ")<br><a href='/'>TOP</a></p>";
-                $stream = $psr17Factory->createStream($body);
-                $response = $psr17Factory->createResponse(404)->withBody($stream);
-            }
+        } catch (UnresolvableActionError | NotFound404Error $e) {
+            $psr17Factory = new Psr17Factory();
+            $body = "<p style='font-style: oblique;'>not found 404 ("
+                . $request->getUri()->getPath() . ")<br><a href='/'>TOP</a></p>";
+            $stream = $psr17Factory->createStream($body);
+            $response = $psr17Factory->createResponse(404)->withBody($stream);
         }
         return $response;
     }
