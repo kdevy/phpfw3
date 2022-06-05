@@ -21,7 +21,7 @@ use Framework\interfaces\ActionResolverInterface;
 use Framework\interfaces\MiddlewareDispatcherInterface;
 use Framework\interfaces\TemplateResponderInterface;
 use Framework\interfaces\RouteInterface;
-use Framework\middlewares\DebuggingMiddleware;
+use Framework\middlewares\ContextsSettingsMiddleware;
 use Framework\middlewares\ErrorHandlingMiddleware;
 
 require_once __DIR__ . DS . "includes/config.php";
@@ -45,6 +45,7 @@ $containerBuilder->addDefinitions([
     MiddlewareDispatcherInterface::class => function (ContainerInterface $container) {
         $middlewareDispatcher = new MiddlewareDispatcher($container->get(ActionResolverInterface::class), $container);
         $middlewareDispatcher->add(new ErrorHandlingMiddleware());
+        $middlewareDispatcher->add(new ContextsSettingsMiddleware());
         return $middlewareDispatcher;
     },
     TemplateResponderInterface::class => function (ContainerInterface $container) {
