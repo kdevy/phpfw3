@@ -22,6 +22,7 @@ use Framework\interfaces\MiddlewareDispatcherInterface;
 use Framework\interfaces\TemplateResponderInterface;
 use Framework\interfaces\RouteInterface;
 use Framework\middlewares\ContextsSettingsMiddleware;
+use Framework\middlewares\CsrfValidationMiddleware;
 use Framework\middlewares\ErrorHandlingMiddleware;
 use Framework\middlewares\SessionMiddleware;
 use Monolog\Handler\StreamHandler;
@@ -51,6 +52,7 @@ $containerBuilder->addDefinitions([
         $middlewareDispatcher->add(new SessionMiddleware([], SESSION_SAVE_DIR));
         $middlewareDispatcher->add(new ErrorHandlingMiddleware());
         $middlewareDispatcher->add(new ContextsSettingsMiddleware());
+        $middlewareDispatcher->add(new CsrfValidationMiddleware());
         return $middlewareDispatcher;
     },
     TemplateResponderInterface::class => function (ContainerInterface $container) {
