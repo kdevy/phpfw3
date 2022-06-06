@@ -24,6 +24,9 @@ use Framework\interfaces\RouteInterface;
 use Framework\middlewares\ContextsSettingsMiddleware;
 use Framework\middlewares\ErrorHandlingMiddleware;
 use Framework\middlewares\SessionMiddleware;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 require_once __DIR__ . DS . "includes/config.php";
 
@@ -56,7 +59,11 @@ $containerBuilder->addDefinitions([
         $templateResponder = new TemplateResponder($request);
         $templateResponder->setBasePath(realpath(BASE_DIR . DS . "templates"));
         return $templateResponder;
-    }
+    },
+    LoggerInterface::class => function(ContainerInterface $container) {
+        $logger = new Logger('app');
+        $logger->pushHandler(new StreamHandler(APP_LOG_DIR . DS . 'common.log', Logger::INFO));
+    },
 ]);
 
 $container = $containerBuilder->build();
@@ -67,7 +74,8 @@ $app = new Application(
     $container->get(ActionResolverInterface::class),
     $container->get(MiddlewareDispatcherInterface::class),
     null,
-    $container->get(RouteInterface::class)
+    $container->get(RouteInterface::class),
+    $container->get(LoggerInterface::class),
 );
 
 return $app;

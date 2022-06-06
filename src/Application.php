@@ -21,6 +21,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class Application
 {
@@ -55,6 +58,11 @@ class Application
     private RouteInterface $route;
 
     /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
      * @param ContainerInterface|null $container
      */
     public function __construct(
@@ -63,7 +71,8 @@ class Application
         ?ActionResolverInterface $actionResolver = null,
         ?MiddlewareDispatcherInterface $middlewareDispatcher = null,
         ?EmitterInterface $emitter = null,
-        ?RouteInterface $route = null
+        ?RouteInterface $route = null,
+        ?LoggerInterface $logger = null
     ) {
         $this->container = $container ?? new Container();
 
@@ -80,6 +89,12 @@ class Application
         $this->route = $route ?? new Route($this->request);
 
         $this->emitter = $emitter ?? new SapiEmitter();
+
+        if (!$logger) {
+            $logger = new Logger('app');
+            $logger->pushHandler(new StreamHandler(APP_LOG_DIR . DS . 'common.log', Logger::INFO));
+        }
+        $this->logger = $logger;
     }
 
     /**
@@ -88,12 +103,15 @@ class Application
      */
     public function run(bool $isSilent = false): ResponseInterface
     {
+        $this->logger->info("start running application.");
         $this->request = $this->request->withAttribute(RouteInterface::class, $this->route);
         $response = $this->middlewareDispatcher->handle($this->request);
 
         if (!$isSilent) {
             $this->emitter->emit($response);
         }
+
+        $this->logger->info("end application.");
 
         return $response;
     }
