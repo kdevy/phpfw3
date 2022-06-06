@@ -59,10 +59,10 @@ class CsrfValidationMiddleware implements MiddlewareInterface
     {
         $server = $request->getServerParams();
         $method = $server["REQUEST_METHOD"];
-        $input_token = $request->getParsedBody()[self::CSRF_INPUT_NAME] ?? null;
+        $inputToken = $request->getParsedBody()[self::CSRF_INPUT_NAME] ?? null;
 
         if (!in_array($method, ["GET", "HEAD", "OPTIONS", "TRACE"])) {
-            if (!self::validate($input_token)) {
+            if (!self::validate($inputToken)) {
                 throw new RuntimeException('アンチCSRFトークンの検証に失敗しました。');
             }
         }
