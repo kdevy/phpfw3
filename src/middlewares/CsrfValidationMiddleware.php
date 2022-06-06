@@ -71,6 +71,7 @@ class CsrfValidationMiddleware implements MiddlewareInterface
             "csrf_token" => self::generateToken(),
             "csrf_tag" => self::generateTag(),
         ];
+        $contexts = array_merge($request->getAttribute(ContextsSettingsMiddleware::ATTRIBUTE_NAME, []), $contexts);
         $request = $request->withAttribute(ContextsSettingsMiddleware::ATTRIBUTE_NAME, $contexts);
         $response = $handler->handle($request);
 
