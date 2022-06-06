@@ -21,10 +21,11 @@ class SessionMiddleware implements MiddlewareInterface
 {
     private SessionInterface $session;
 
-   /**
-    * @param array $options
-    */
-    public function __construct(private array $options=[])
+    /**
+     * @param array $options
+     * @param string|null $session_save_path
+     */
+    public function __construct(private array $options=[], private ?string $session_save_path=null)
     {
     }
 
@@ -36,6 +37,9 @@ class SessionMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (!IS_CLI) {
+            if ($this->session_save_path) {
+                session_save_path($this->session_save_path);
+            }
             session_start($this->options);
         }
 

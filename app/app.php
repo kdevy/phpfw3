@@ -48,7 +48,7 @@ $containerBuilder->addDefinitions([
     },
     MiddlewareDispatcherInterface::class => function (ContainerInterface $container) {
         $middlewareDispatcher = new MiddlewareDispatcher($container->get(ActionResolverInterface::class), $container);
-        $middlewareDispatcher->add(new SessionMiddleware());
+        $middlewareDispatcher->add(new SessionMiddleware([], SESSION_SAVE_DIR));
         $middlewareDispatcher->add(new ErrorHandlingMiddleware());
         $middlewareDispatcher->add(new ContextsSettingsMiddleware());
         return $middlewareDispatcher;

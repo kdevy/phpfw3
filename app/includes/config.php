@@ -26,6 +26,8 @@ define("APACHE_LOG_DIR", LOG_DIR . DS . "httpd");
 
 define("APP_LOG_DIR", LOG_DIR . DS . "app");
 
+define("SESSION_SAVE_DIR", VAR_DIR . DS . "session");
+
 define("DEBUG", true);
 
 /**
