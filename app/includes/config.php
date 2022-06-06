@@ -40,6 +40,12 @@ ini_set("error_log", APACHE_LOG_DIR . DS . "php_error_log");
 
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
+date_default_timezone_set("Asia/Tokyo");
+
+ini_set("default_charset", "UTF-8");
+
+ini_set("mbstring.language", "Japanese");
+
 /**
  * 任意の定数・関数定義ファイルを読み込んで下さい。
  */
