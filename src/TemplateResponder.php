@@ -127,7 +127,7 @@ class TemplateResponder implements TemplateResponderInterface
             $body = file_get_contents($templatePath);
         }
 
-        $body = self::assginContexts($body, $contexts);
+        $body = self::assginContexts($body, $contexts, true);
 
         return $this->responseFromBody($body, $statusCode, $headers);
     }
@@ -135,27 +135,30 @@ class TemplateResponder implements TemplateResponderInterface
     /**
      * @param string $buff
      * @param array $contexts
+     * @param boolean $isReplaceNoMatchKeyword
      * @return string
      */
-    public static function assginContexts(string $buff, array $contexts = []): string
+    public static function assginContexts(string $buff, array $contexts = [], $isReplaceNoMatchKeyword=false): string
     {
         if (!$contexts) {
             return $buff;
         }
 
-        $match_contexts = [];
-        preg_match_all("/\___.+?\___/", $buff, $match_contexts);
+        $matchContexts = [];
+        preg_match_all("/\___.+?\___/", $buff, $matchContexts);
 
-        foreach ($match_contexts[0] as $match_context) {
-            $keyword = str_replace("___", "", $match_context);
+        foreach ($matchContexts[0] as $matchKeyword) {
+            $keyword = str_replace("___", "", $matchKeyword);
 
             if ($keyword == "") {
                 continue;
             }
             if (array_key_exists($keyword, $contexts)) {
-                $buff = str_replace([$match_context], $contexts[$keyword], $buff);
+                $buff = str_replace([$matchKeyword], (string)$contexts[$keyword], $buff);
             } else {
-                $buff = str_replace([$match_context], "", $buff);
+                if ($isReplaceNoMatchKeyword) {
+                    $buff = str_replace([$matchKeyword], "", $buff);
+                }
             }
         }
 
@@ -171,29 +174,29 @@ class TemplateResponder implements TemplateResponderInterface
         $result = [];
 
         $buff_arr = explode("\n", $buff);
-        $tmp_keyword = null;
+        $tmpKeyword = null;
 
         foreach ($buff_arr as $row) {
             $is_deli = strpos($row, self::PARTS_START_STR) !== false;
             if ($is_deli) {
                 $keyword = trim(str_replace([self::PARTS_START_STR, self::PARTS_END_STR], "", $row));
-                if ($tmp_keyword) {
-                    if ($keyword && $keyword == $tmp_keyword) {
+                if ($tmpKeyword) {
+                    if ($keyword && $keyword == $tmpKeyword) {
                         // block end
-                        $tmp_keyword = null;
+                        $tmpKeyword = null;
                     }
                 } else {
                     if ($keyword) {
                         // block start
-                        $tmp_keyword = $keyword;
-                        $result[$tmp_keyword] = [];
+                        $tmpKeyword = $keyword;
+                        $result[$tmpKeyword] = [];
                     }
                 }
             }
 
             // line start
-            if (!$is_deli && $tmp_keyword) {
-                $result[$tmp_keyword][] = $row;
+            if (!$is_deli && $tmpKeyword) {
+                $result[$tmpKeyword][] = $row;
             }
         }
 

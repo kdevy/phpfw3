@@ -10,18 +10,23 @@ declare(strict_types=1);
 
 namespace Framework\middlewares;
 
-use Framework\exceptions\NotFound404Error;
-use Framework\exceptions\UnresolvableActionError;
-use Framework\interfaces\RouteInterface;
-use Nyholm\Psr7\Factory\Psr17Factory;
+use Framework\interfaces\SessionInterface;
+use Framework\Session;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class ContextsSettingsMiddleware implements MiddlewareInterface
+class SessionMiddleware implements MiddlewareInterface
 {
-    public const ATTRIBUTE_NAME = "contexts";
+    private SessionInterface $session;
+
+   /**
+    * @param array $options
+    */
+    public function __construct(private array $options=[])
+    {
+    }
 
     /**
      * @param ServerRequestInterface $request
@@ -30,13 +35,13 @@ class ContextsSettingsMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /** @var RouteInterface */
-        $route = $request->getAttribute(RouteInterface::class);
-        $contexts = [
-            "module" => $route->getModuleName(),
-            "action" => $route->getActionName(),
-        ];
-        $request = $request->withAttribute(self::ATTRIBUTE_NAME, $contexts);
+        if (!IS_CLI) {
+            session_start($this->options);
+        }
+
+        $this->session = new Session();
+
+        $request = $request->withAttribute(SessionInterface::class, $this->session);
         $response = $handler->handle($request);
 
         return $response;

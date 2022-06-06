@@ -20,3 +20,22 @@ function requireOnceFrom(array $patterns): void
         }
     }
 }
+
+/**
+ * @param string $str
+ * @param [type] ...$replacements
+ * @return string
+ */
+function format(string $str, ...$replacements): string
+{
+    array_walk($replacements, function ($replacement) use (&$str) {
+        $replacement = array_combine(
+            array_map(fn ($rep_key) => '%{' . $rep_key . '}', array_keys($replacement)),
+            array_values($replacement)
+        );
+
+        $str = strtr($str, $replacement);
+    });
+
+    return $str;
+}

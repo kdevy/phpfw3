@@ -8,6 +8,8 @@
 
 declare(strict_types=1);
 
+define("IS_CLI", php_sapi_name() == "cli");
+
 /**
  * アプリケーション固有の定義を行います。
  */

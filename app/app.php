@@ -23,6 +23,7 @@ use Framework\interfaces\TemplateResponderInterface;
 use Framework\interfaces\RouteInterface;
 use Framework\middlewares\ContextsSettingsMiddleware;
 use Framework\middlewares\ErrorHandlingMiddleware;
+use Framework\middlewares\SessionMiddleware;
 
 require_once __DIR__ . DS . "includes/config.php";
 
@@ -44,6 +45,7 @@ $containerBuilder->addDefinitions([
     },
     MiddlewareDispatcherInterface::class => function (ContainerInterface $container) {
         $middlewareDispatcher = new MiddlewareDispatcher($container->get(ActionResolverInterface::class), $container);
+        $middlewareDispatcher->add(new SessionMiddleware());
         $middlewareDispatcher->add(new ErrorHandlingMiddleware());
         $middlewareDispatcher->add(new ContextsSettingsMiddleware());
         return $middlewareDispatcher;
