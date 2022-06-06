@@ -45,6 +45,4 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
  */
 requireOnceFrom([
     __DIR__ . DS . "*.php",
-    // __DIR__ . DS . "functions/*.php",
-    // __DIR__ . DS . "constants/*.php",
 ]);

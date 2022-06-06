@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * Kdevy framework - My original second php framework.
+ *
+ * Copyright © 2021 kdevy. All Rights Reserved.
+ */
+
+declare(strict_types=1);
+
+class_alias(Illuminate\Database\Capsule\Manager::class, 'DB');
+
+$database = new DB();
+
+$config = [
+    'driver'    => 'mysql',
+    'host'      => 'localhost',
+    'database'  => '',
+    'username'  => '',
+    'password'  => '',
+    'charset'   => 'utf8mb4',
+    'collation' => 'utf8mb4_general_ci',
+];
+$database->addConnection($config);
+$database->setAsGlobal();
+$database->bootEloquent();
