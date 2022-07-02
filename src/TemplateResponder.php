@@ -115,9 +115,14 @@ class TemplateResponder implements TemplateResponderInterface
         $route = $this->request->getAttribute(RouteInterface::class);
         $templatePath = realpath($this->basePath . DS . $route->getModuleName() . DS . $route->getActionName() . ".html");
 
-        if (!is_readable($templatePath)) {
-            throw new RuntimeException("Template file not unreadable ({$templatePath}).");
+        if (!$templatePath || !is_readable($templatePath)) {
+            $templatePath = realpath($this->basePath . DS . $route->getModuleName() . DS . lcfirst($route->getActionName()) . ".html");
+
+            if (!$templatePath || !is_readable($templatePath)) {
+                throw new RuntimeException("Template file not unreadable ({$templatePath}).");
+            }
         }
+        
 
         if ($this->extendFilePath) {
             $parts = self::extractParts(file_get_contents($templatePath));
