@@ -39,3 +39,18 @@ function format(string $str, ...$replacements): string
 
     return $str;
 }
+
+/**
+ * @param string $filename
+ * @return boolean|string
+ */
+function getMimeType(string $filename): bool|string
+{
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    $path = INCLUDE_DIR . DS . "mimetypes.json";
+    if (!is_readable($path)) {
+        throw new RuntimeException("cannot read file '{$path}'");
+    }
+    $mimeTypes = (array)json_decode(file_get_contents($path));
+    return $mimeTypes[$ext] ?? false;
+}
