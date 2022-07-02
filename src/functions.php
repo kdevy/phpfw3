@@ -8,6 +8,9 @@
 
 declare(strict_types=1);
 
+use Framework\exceptions\ValidatorError;
+use Framework\validators\Validator;
+
 /**
  * @param array $patterns
  * @return void
@@ -53,4 +56,36 @@ function getMimeType(string $filename): bool|string
     }
     $mimeTypes = (array)json_decode(file_get_contents($path));
     return $mimeTypes[$ext] ?? false;
+}
+
+/**
+ * @param mixed $value
+ * @param array $contexts
+ * @param array $validators
+ * @param boolean $isThrow
+ * @return boolean|string
+ */
+function simple_validator(mixed $value, array $contexts, array $validators, bool $isThrow = false): bool|string
+{
+    if (!$validators) {
+        return true;
+    }
+
+    foreach ($validators as $validator) {
+        if (!$validator instanceof Validator) {
+            throw new \RuntimeException("Passed validator the not a Validator object.");
+        }
+
+        if ($isThrow) {
+            $validator($value, $contexts);
+        } else {
+            try {
+                $validator($value, $contexts);
+            } catch (ValidatorError $e) {
+                return htmlspecialchars($e->getMessage());
+            }
+        }
+    }
+
+    return true;
 }
