@@ -10,10 +10,7 @@ declare(strict_types=1);
 
 namespace Framework\middlewares;
 
-use Framework\exceptions\NotFound404Error;
-use Framework\exceptions\UnresolvableActionError;
 use Framework\interfaces\RouteInterface;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
