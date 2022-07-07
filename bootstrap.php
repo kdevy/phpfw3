@@ -14,6 +14,10 @@ define("DS", DIRECTORY_SEPARATOR);
 
 require_once __DIR__ . DS . "vendor" . DS . "autoload.php";
 
+if (0 === strncmp($_SERVER["REQUEST_URI"], '/static/', 8)) {
+    exit(0);
+}
+
 /**
  * @var Application
  */

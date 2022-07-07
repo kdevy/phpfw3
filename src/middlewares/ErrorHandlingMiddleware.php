@@ -12,6 +12,8 @@ namespace Framework\middlewares;
 
 use Framework\exceptions\NotFound404Error;
 use Framework\exceptions\UnresolvableActionError;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -30,6 +32,10 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         try {
             $response = $handler->handle($request);
         } catch (UnresolvableActionError | NotFound404Error $e) {
+            $logger = new Logger('app');
+            $logger->pushHandler(new StreamHandler(APP_LOG_DIR . DS . 'common.log', Logger::INFO));
+            $logger->info("return not found 404", ["message" => $e->getMessage()]);
+
             $psr17Factory = new Psr17Factory();
             $body = "<p style='font-style: oblique;'>not found 404 ("
                 . $request->getUri()->getPath() . ")<br><a href='/'>TOP</a></p>";
