@@ -103,7 +103,8 @@ class Application
      */
     public function run(bool $isSilent = false): ResponseInterface
     {
-        $this->logger->info("start running application.");
+        $server = $this->request->getServerParams();
+        $this->logger->info("start application.", [ "rp" => $this->route->getPath(), "ga" => $server["HTTP_USER_AGENT"]]);
         $this->request = $this->request->withAttribute(RouteInterface::class, $this->route);
         $response = $this->middlewareDispatcher->handle($this->request);
 
@@ -111,7 +112,7 @@ class Application
             $this->emitter->emit($response);
         }
 
-        $this->logger->info("end application.");
+        $this->logger->info("terminate application.");
 
         return $response;
     }

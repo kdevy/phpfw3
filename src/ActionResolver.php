@@ -16,6 +16,8 @@ use Framework\interfaces\ActionInterface;
 use Framework\interfaces\ActionResolverInterface;
 use Framework\interfaces\RouteInterface;
 use Framework\interfaces\TemplateResponderInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class ActionResolver implements ActionResolverInterface
 {
@@ -69,6 +71,10 @@ class ActionResolver implements ActionResolverInterface
         if (!class_exists($actionClassName)) {
             throw new UnresolvableActionError("The action class that does not exist ({$actionClassName}).");
         }
+
+        $logger = new Logger('app');
+        $logger->pushHandler(new StreamHandler(APP_LOG_DIR . DS . 'common.log', Logger::INFO));
+        $logger->info("load action class '$includePath'");
 
         /**
          * @var ActionInterface
